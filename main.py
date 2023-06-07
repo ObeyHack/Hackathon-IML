@@ -1,6 +1,6 @@
 
 def main():
-    x = 1
+    x = 2
 
 
 if __name__ == '__main__':
