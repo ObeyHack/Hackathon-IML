@@ -1,5 +1,10 @@
-from Preprocess_data import preprocess
+from matplotlib import pyplot as plt
 
+from Preprocess_data import preprocess
+from scipy.stats import pearsonr
+
+#TODO devide each feature to overall
+L_features= ['no_of_adults', 'no_of_children', 'no_of_room', 'no_of_extra_bed', 'hotel_star_rating','is_first_booking','cancellation_policy_code','is_user_logged_in','guest_nationality_country_name']
 
 def important_data():
     X, y = preprocess()
@@ -15,12 +20,48 @@ def important_data():
     # print max of cancellation_policy_code_hash
     print("max: ", max(cancellation_policy_code_hash, key=cancellation_policy_code_hash.get),
           cancellation_policy_code_hash[max(cancellation_policy_code_hash, key=cancellation_policy_code_hash.get)])
-    #a lot cancel while using 1D1N_1N 2854
+    # a lot cancel while using 1D1N_1N 2854
 
-def piercing_correlation():
+
+
+
+
+def plots_of_features():
     # make  piercing correlation graph for each feature with y (cancellation)
     X, y = preprocess()
     # for each feature make a plot of the feature with y
-    for feature in X:
-        print(feature)
-        # make a plot of the feature with y
+    for feature in L_features:
+        if feature == 'guest_nationality_country_name':
+            x=0
+        #for each feature find unique values
+        unique_values = X[feature].unique()
+        #for each unique find the number of time it appears
+        X_feature_list = list(X[feature])
+        sumuniqe = [X_feature_list.count(uni) for uni in unique_values]
+        #for each unique value find the number of cancellation
+        unique_values_hash = {unique_values[i]: 0 for i in range(len(unique_values))}
+        for row in range(len(y)):
+            unique_values_hash[X[feature][row]] += y[row]
+
+        #list of the unique_values_hash.values()
+        L_unique_values_hash_values = list(unique_values_hash.values())
+        final_vals_for_uniquq_values = [L_unique_values_hash_values[i]/sumuniqe[i] for i in range(len(L_unique_values_hash_values))]
+
+
+        #make a plot of the feature with y
+       # plt.scatter(unique_values, L_unique_values_hash_values)
+        plt.bar(unique_values, final_vals_for_uniquq_values, color='maroon',
+                width=0.4)
+        plt.title(feature)
+        plt.xlabel(feature)
+        plt.ylabel('cancellation')
+        plt.show()
+
+def main ():
+    important_data()
+    plots_of_features()
+
+
+
+if __name__ == '__main__':
+    main()
