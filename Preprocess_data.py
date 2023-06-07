@@ -1,6 +1,7 @@
 import pandas as pd
 
-CATEGORICAL_FEATURES = ["charge_option", "customer_nationality", "guest_nationality_country_name", "origin_country_code"
+CATEGORICAL_FEATURES = ["charge_option", "customer_nationality",
+                        "guest_nationality_country_name", "origin_country_code"
                        "language", "original_payment_method", "original_payment_type"]
 
 def preprocess():
