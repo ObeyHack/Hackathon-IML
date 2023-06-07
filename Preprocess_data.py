@@ -17,7 +17,7 @@ def important_data():
     # print max of cancellation_policy_code_hash
     print("max: ", max(cancellation_policy_code_hash, key=cancellation_policy_code_hash.get),
           cancellation_policy_code_hash[max(cancellation_policy_code_hash, key=cancellation_policy_code_hash.get)])
-    #a lot cancel while using 1D1N_1N 2854
+    #a lot cancel while using 1D1N_1 N 2854
 
 def piercing_correlation():
     # make  piercing correlation graph for each feature with y (cancellation)
