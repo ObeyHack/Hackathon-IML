@@ -151,7 +151,7 @@ def preprocess_features(X_train, y_train):
     # hotel_brand_code - delete for now TODO
     X_train = X_train.drop('hotel_brand_code', axis=1)
 
-    # hotel_chain_code - categorical, null to "No-Chain"
+    # hotel_chain_code - categorical,null to "No-Chain"
     X_train['hotel_chain_code'] = X_train['hotel_chain_code'].fillna("No-Chain")
     X_train = pd.get_dummies(X_train, prefix="hotel_chain_code_", columns=['hotel_chain_code'])
 
