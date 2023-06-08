@@ -1,0 +1,60 @@
+is_user_logged_in :
+0.3 of not logged in users canceled their reservation
+0.2 of logged in users canceled their reservation
+
+hotel rating :
+hotel star ratin g is not a good indicator for cancellation (maybe only zero is a bit good)
+
+no extra bed :
+0.35 for 2 is the highest cancellation probability
+
+no of room :
+8 is the highest cancellation probability
+guassian distribution?
+
+no of children :
+6 children is the highest cancellation probability
+less children less cancellation probability
+
+
+
+charge option :
+less then 0.2 probability of cancellation for pay now option
+more then 0.6 probability of cancellation for pay Pay at check in
+0.5  probability of cancellation for pay later
+
+guest_nationality_country_name:
+
+guest_nationality_country_name  under 20 %
+Thailand  number of overall reservation:  4409 cancellation probabilty :  0.1789521433431617
+Argentina  number of overall reservation:  43 cancellation probabilty :  0.16279069767441862
+Malaysia  number of overall reservation:  7752 cancellation probabilty :  0.17414860681114552
+Germany  number of overall reservation:  571 cancellation probabilty :  0.13134851138353765
+New Zealand  number of overall reservation:  247 cancellation probabilty :  0.16194331983805668
+Indonesia  number of overall reservation:  2576 cancellation probabilty :  0.1766304347826087
+Australia  number of overall reservation:  1607 cancellation probabilty :  0.19352831362787803
+Norway  number of overall reservation:  133 cancellation probabilty :  0.17293233082706766
+Finland  number of overall reservation:  53 cancellation probabilty :  0.1509433962264151
+France  number of overall reservation:  473 cancellation probabilty :  0.1945031712473573
+Belgium  number of overall reservation:  72 cancellation probabilty :  0.18055555555555555
+Switzerland  number of overall reservation:  194 cancellation probabilty :  0.13402061855670103
+Denmark  number of overall reservation:  96 cancellation probabilty :  0.07291666666666667
+Ireland  number of overall reservation:  96 cancellation probabilty :  0.11458333333333333
+Brunei Darussalam  number of overall reservation:  151 cancellation probabilty :  0.1456953642384106
+Poland  number of overall reservation:  58 cancellation probabilty :  0.15517241379310345
+Sweden  number of overall reservation:  149 cancellation probabilty :  0.18120805369127516
+Mongolia  number of overall reservation:  7 cancellation probabilty :  0.14285714285714285
+Laos  number of overall reservation:  50 cancellation probabilty :  0.04
+Chile  number of overall reservation:  43 cancellation probabilty :  0.09302325581395349
+
+guest_nationality_country_name up to 50 %
+Russia  number of overall reservation:  298 cancellation probabilty :  0.5067114093959731
+Pakistan  number of overall reservation:  184 cancellation probabilty :  0.5108695652173914
+Morocco  number of overall reservation:  36 cancellation probabilty :  0.6111111111111112
+Angola  number of overall reservation:  14 cancellation probabilty :  1.0
+Mauritius  number of overall reservation:  13 cancellation probabilty :  0.7692307692307693
+Uruguay  number of overall reservation:  6 cancellation probabilty :  0.6666666666666666
+Algeria  number of overall reservation:  27 cancellation probabilty :  0.9259259259259259
+UNKNOWN  number of overall reservation:  8 cancellation probabilty :  0.625
+Cyprus  number of overall reservation:  13 cancellation probabilty :  0.7692307692307693
+Nigeria  number of overall reservation:  12 cancellation probabilty :  0.5833333333333334
