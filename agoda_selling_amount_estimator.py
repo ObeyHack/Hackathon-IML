@@ -14,12 +14,12 @@ from base_estimator import BaseEstimator
 import numpy as np
 
 
-class AgodaCancellationEstimator(BaseEstimator):
+class AgodaSellingAmountEstimator(BaseEstimator):
     """
     An estimator for solving the Agoda Cancellation challenge
     """
 
-    def __init__(self) -> AgodaCancellationEstimator:
+    def __init__(self) -> AgodaSellingAmountEstimator:
         """
         Instantiate an estimator for solving the Agoda Cancellation challenge
 
@@ -32,7 +32,7 @@ class AgodaCancellationEstimator(BaseEstimator):
 
         """
         super().__init__()
-        self.models = list()
+        self.model = None
 
     def _fit(self, X: np.ndarray, y: np.ndarray) -> NoReturn:
         """
@@ -50,20 +50,7 @@ class AgodaCancellationEstimator(BaseEstimator):
         -----
 
         """
-        # self.model = LinearRegression().fit(X, y)
-        # 0.28 loss
-        # self.models.append(LogisticRegression(random_state=0, max_iter=40, solver="saga").fit(X, y))
-        # 0.3 loss - 13
-        # self.models.append(KNeighborsClassifier(n_neighbors=13).fit(X, y))
-        # 0.21 - 40 estimators
-        # self.models.append(AdaBoostClassifier(n_estimators=40, random_state=0).fit(X, y))
-        # 0.22 loss
-        # best k = 14
-        self.models.append(DecisionTreeClassifier(max_depth=2).fit(X, y))
-        # 0.26 loss
-        # self.models.append(MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(100, 10, 2), random_state=1).fit(X, y))
-
-        # self.models.append(LinearRegression().fit(X, y))
+        self.model = LinearRegression().fit(X, y)
 
     def _predict(self, X: np.ndarray) -> np.ndarray:
         """
@@ -79,13 +66,8 @@ class AgodaCancellationEstimator(BaseEstimator):
         responses : ndarray of shape (n_samples, )
             Predicted responses of given samples
         """
-        sums = np.zeros(len(X))
-        for m in self.models:
-            sums += m.predict(X)
-        sums /= len(self.models)
-        sums = np.round(sums)
 
-        return sums
+        return self.model.predict(X)
 
     def _loss(self, X: np.ndarray, y: np.ndarray) -> float:
         """
@@ -105,4 +87,4 @@ class AgodaCancellationEstimator(BaseEstimator):
             Performance under loss function
         """
 
-        return sklearn.metrics.f1_score(y, self.predict(X))
+        return np.sqrt(mean_squared_error(y, self.predict(X)))
