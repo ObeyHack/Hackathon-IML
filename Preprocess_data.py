@@ -2,6 +2,20 @@ import pandas as pd
 
 import Currency_convert
 
+CATEGORIAL_FEATURES = ["accommadation_type_name",
+                       "charge_option",
+                       "customer_nationality",
+                       "guest_nationality_country_name",
+                       "origin_country_code",
+                       "language",
+                       "original_payment_method",
+                       "original_payment_type",
+                       "original_payment_currency",
+                       "cancellation_policy_code",
+                       "hotel_area_code_by_country",
+                       "hotel_chain_code",
+                       "hotel_city_code",
+                       "hotel_country_code"]
 
 def preprocess():
     data = pd.read_csv("data//agoda_cancellation_train.csv")
