@@ -18,8 +18,8 @@ CATEGORICAL_FEATURES = ["accommadation_type_name",
                        "hotel_country_code"]
 
 
-def preprocess():
-    data = pd.read_csv("data//agoda_cancellation_train.csv")
+def preprocess(filename: str):
+    data = pd.read_csv(filename)
     X_train = data.drop('cancellation_datetime', axis=1)
     y_train = data['cancellation_datetime']
     y_train = y_train.apply(lambda x: 0 if pd.isnull(x) else 1)

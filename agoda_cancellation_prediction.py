@@ -1,7 +1,7 @@
+import Preprocess_data
 from base_estimator import BaseEstimator
 from agoda_cancellation_estimator import AgodaCancellationEstimator
 from utils import split_train_test
-
 import numpy as np
 import pandas as pd
 
@@ -21,17 +21,8 @@ def load_data(filename: str):
     2) Tuple of pandas.DataFrame and Series
     3) Tuple of ndarray of shape (n_samples, n_features) and ndarray of shape (n_samples,)
     """
-    # TODO - replace below code with any desired preprocessing
-    full_data = pd.read_csv(filename).dropna().drop_duplicates()
-    # features = full_data[["h_booking_id",
-    #                       "hotel_id",
-    #                       "accommadation_type_name",
-    #                       "hotel_star_rating",
-    #                       "customer_nationality"]]
-    # labels = full_data["cancellation_datetime"]
-
-
-    return features, labels
+    X_train, y_train, h_booking_id_save = Preprocess_data.preprocess(filename)
+    return X_train, y_train
 
 
 def evaluate_and_export(estimator: BaseEstimator, X: np.ndarray, filename: str):
@@ -60,7 +51,7 @@ if __name__ == '__main__':
     np.random.seed(0)
 
     # Load data
-    df, cancellation_labels = load_data("../datasets/agoda_cancellation_train.csv")
+    df, cancellation_labels = load_data("data//agoda_cancellation_train.csv")
     train_X, train_y, test_X, test_y = split_train_test(df, cancellation_labels)
 
     # Fit model over data
