@@ -10,9 +10,12 @@ def cancellation_cost(cancellation_policy_codes, nights_count, total_prices, day
 
     days_before_checkin, percentage, nights = parsed_policy_codes[min_index]
     if nights == 0:
-        return total_prices * (percentage / 100)
+        user_cost = total_prices * (percentage / 100)
 
-    return night_cost * nights
+    else:
+        user_cost = night_cost * nights
+
+    return total_prices - user_cost
 
 
 def argmin_days(days_before_checkin, parsed_policy_codes):
@@ -20,7 +23,7 @@ def argmin_days(days_before_checkin, parsed_policy_codes):
     min_valid_days = math.inf
     for i, policy_code in enumerate(parsed_policy_codes):
         days_before_charge, percentage, nights = policy_code
-        if days_before_charge >= days_before_checkin and days_before_charge < min_valid_days:
+        if days_before_checkin <= days_before_charge < min_valid_days:
             min_valid_days = days_before_charge
             min_index = i
     return min_index
@@ -33,6 +36,8 @@ def parse_cancellation_policy_codes(cancellation_policy_codes):
 
 
 def parse_single_policy_code(policy_code):
+    if policy_code == "UNKNOWN":
+        return 0, 0, 0
     days_charge = policy_code.split("D")
     percentage = 0
     nights = 0

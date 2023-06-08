@@ -1,6 +1,8 @@
+import numpy as np
 import pandas as pd
 
 import Currency_convert
+from cancellation_policy_codes import cancellation_cost
 
 CATEGORICAL_FEATURES = ["accommadation_type_name",
                        "charge_option",
@@ -18,19 +20,13 @@ CATEGORICAL_FEATURES = ["accommadation_type_name",
                        "hotel_country_code"]
 
 
-def preprocess(filename: str):
-    data = pd.read_csv(filename)
-    X_train = data.drop('cancellation_datetime', axis=1)
-    y_train = data['cancellation_datetime']
-    y_train = y_train.apply(lambda x: 0 if pd.isnull(x) else 1)
-
+def preprocess_features(X_train, y_train):
     # booking_datetime - delete, parse_dates=["booking_datetime"] in read_csv, use booking_datetime_DayOfYear
     #                                                                             and booking_datetime_year
     X_train['booking_datetime'] = pd.to_datetime(X_train['checkout_date'])
     X_train["booking_datetime_DayOfYear"] = X_train["booking_datetime"].dt.dayofyear
     X_train["booking_datetime_year"] = X_train["booking_datetime"].dt.year
     X_train = X_train.drop('booking_datetime', axis=1)
-
 
     # checkin_date - delete, parse_dates=["checkin_date"] in read_csv, use booking_datetime_DayOfYear
     #                                                                             and booking_datetime_year
@@ -43,7 +39,9 @@ def preprocess(filename: str):
     # (checkout_date - checkin_date).days
     X_train['checkout_date'] = pd.to_datetime(X_train['checkout_date'])
     days = (X_train["checkin_date_DayOfYear"] - X_train["checkout_date"].dt.dayofyear)
-    X_train["stay_duration"] = ((days % 365) + 365) % 365 # mod 365
+    years = X_train["checkout_date"].dt.year - X_train['checkin_date_year']
+    X_train["stay_duration"] = (((days % 365) + 365) % 365) + (years * 365) # mod 365
+
     X_train = X_train.drop('checkout_date', axis=1)
 
     # hotel_id - delete for now TODO
@@ -72,7 +70,7 @@ def preprocess(filename: str):
     # customer_nationality - categorical, remove "of America" from prefix "United States of America"
     X_train["customer_nationality"] = X_train["customer_nationality"].apply(lambda country:
                                                                             "United States" if country ==
-                                                                            "United States of America" else country)
+                                                                                               "United States of America" else country)
 
     X_train = pd.get_dummies(X_train, prefix="customer_nationality_", columns=['customer_nationality'])
 
@@ -112,13 +110,6 @@ def preprocess(filename: str):
     # language - categorical
     X_train = pd.get_dummies(X_train, prefix="language_", columns=['language'])
 
-    # original_selling_amount - numeric, apply currency_convert, min: TODO, max: TODO
-    X_train['original_selling_amount'] = X_train['original_selling_amount'].astype(float)
-    X_train['original_selling_amount_in_dollar'] = list(zip(X_train['original_selling_amount'],
-                                                            X_train['original_payment_currency']))
-    X_train['original_selling_amount_in_dollar'] = X_train['original_selling_amount_in_dollar'].apply(lambda amount_currency:
-                                                                                  Currency_convert.to_dollar(amount_currency[0],
-                                                                                                             amount_currency[1]))
     # original_payment_method - categorical
     X_train = pd.get_dummies(X_train, prefix="original_payment_method_", columns=['original_payment_method'])
 
@@ -134,7 +125,7 @@ def preprocess(filename: str):
     y_train = y_train[mask]
 
     # cancellation_policy_code - categorical TODO
-    X_train = pd.get_dummies(X_train, prefix="cancellation_policy_code_", columns=['cancellation_policy_code'])
+    # X_train = pd.get_dummies(X_train, prefix="cancellation_policy_code_", columns=['cancellation_policy_code'])
 
     # is_first_booking - no change, already categorical, in {0,1}
     mask = X_train['is_first_booking'].isin({0, 1})
@@ -152,7 +143,7 @@ def preprocess(filename: str):
     # hotel_area_code - use hotel_area_code_by_country with hash
     # hotel_area_code_by_country - categorical
     X_train['hotel_area_code_by_country'] = list(zip(X_train['hotel_area_code'],
-                                                            X_train['hotel_country_code']))
+                                                     X_train['hotel_country_code']))
 
     X_train['hotel_area_code_by_country'] = X_train['hotel_area_code_by_country'].apply(lambda x: hash(x))
     X_train = pd.get_dummies(X_train, prefix="hotel_area_code_by_country_", columns=['hotel_area_code_by_country'])
@@ -183,9 +174,53 @@ def preprocess(filename: str):
     return X_train, y_train, h_booking_id_save
 
 
+def preprocess_for_cost(filename: str):
+    data = pd.read_csv(filename)
+    X_train = data.drop('original_selling_amount', axis=1)
+    y_train = data['original_selling_amount']
+
+    X_train, y_train, h_booking_id_save = preprocess_features(X_train, y_train)
+
+    cancellation_days = X_train['cancellation_datetime'].apply(lambda x: 0 if pd.isnull(x)
+                                                                                else pd.to_datetime(x).dayofyear +
+                                                                                     365*pd.to_datetime(x).year)
+    days_before_checkin = (X_train['checkin_date_DayOfYear'] + X_train['checkin_date_year'] * 365) - \
+                          cancellation_days
+
+    func = np.vectorize(cancellation_cost, otypes=[float])
+    y_train = func(X_train["cancellation_policy_code"], y_train,
+                                days_before_checkin, X_train['stay_duration'])
+
+    y_train[X_train['cancellation_datetime'].isna()] = -1
+    X_train['cancellation_datetime'] = X_train['cancellation_datetime'].apply(lambda x: 0 if pd.isnull(x) else 1)
+
+    return X_train, y_train, h_booking_id_save
+
+
+def preprocess_for_cancellation(filename: str):
+    data = pd.read_csv(filename)
+    X_train = data.drop('cancellation_datetime', axis=1)
+    y_train = data['cancellation_datetime']
+    y_train = y_train.apply(lambda x: 0 if pd.isnull(x) else 1)
+
+    # original_selling_amount - numeric, apply currency_convert, min: TODO, max: TODO
+    X_train['original_selling_amount'] = X_train['original_selling_amount'].astype(float)
+    X_train['original_selling_amount_in_dollar'] = list(zip(X_train['original_selling_amount'],
+                                                            X_train['original_payment_currency']))
+    X_train['original_selling_amount_in_dollar'] = X_train['original_selling_amount_in_dollar'].apply(
+        lambda amount_currency:
+        Currency_convert.to_dollar(amount_currency[0],
+                                   amount_currency[1]))
+    X_train, y_train, h_booking_id_save = preprocess_features(X_train, y_train)
+
+    return X_train, y_train, h_booking_id_save
+
+
+
+
+
 def main():
-    X, y, y_index = preprocess()
-    T = 1
+    z =1
 
 
 if __name__ == '__main__':
