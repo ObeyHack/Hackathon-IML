@@ -4,7 +4,7 @@ import Currency_convert
 
 
 def preprocess():
-    data = pd.read_csv('data\\agoda_cancellation_train.csv')
+    data = pd.read_csv("data//agoda_cancellation_train.csv")
     X_train = data.drop('cancellation_datetime', axis=1)
     y_train = data['cancellation_datetime']
     y_train = y_train.apply(lambda x: 0 if pd.isnull(x) else 1)
@@ -12,7 +12,7 @@ def preprocess():
     # booking_datetime - delete, parse_dates=["booking_datetime"] in read_csv, use booking_datetime_DayOfYear
     #                                                                             and booking_datetime_year
     X_train['booking_datetime'] = pd.to_datetime(X_train['checkout_date'])
-    X_train["booking_datetime_DayOfYear"] = X_train["booking_datetime"].dt.day_of_year
+    X_train["booking_datetime_DayOfYear"] = X_train["booking_datetime"].dt.dayofyear
     X_train["booking_datetime_year"] = X_train["booking_datetime"].dt.year
     X_train = X_train.drop('booking_datetime', axis=1)
 
@@ -20,14 +20,14 @@ def preprocess():
     # checkin_date - delete, parse_dates=["checkin_date"] in read_csv, use booking_datetime_DayOfYear
     #                                                                             and booking_datetime_year
     X_train['checkin_date'] = pd.to_datetime(X_train['checkin_date'])
-    X_train["checkin_date_DayOfYear"] = X_train["checkin_date"].dt.day_of_year
+    X_train["checkin_date_DayOfYear"] = X_train["checkin_date"].dt.dayofyear
     X_train["checkin_date_year"] = X_train["checkin_date"].dt.year
     X_train = X_train.drop('checkin_date', axis=1)
 
     # checkout_date - delete from train, will be used to calculate stay_duration
     # (checkout_date - checkin_date).days
     X_train['checkout_date'] = pd.to_datetime(X_train['checkout_date'])
-    days = (X_train["checkin_date_DayOfYear"] - X_train["checkout_date"].dt.day_of_year)
+    days = (X_train["checkin_date_DayOfYear"] - X_train["checkout_date"].dt.dayofyear)
     X_train["stay_duration"] = ((days % 365) + 365) % 365 # mod 365
     X_train = X_train.drop('checkout_date', axis=1)
 
@@ -89,9 +89,9 @@ def preprocess():
     y_train = y_train[mask]
 
     # origin_country_code - categorical, remove null and TODO what is A1?
-    nun_rows = X_train[X_train['origin_country_code'].isna()]
-    y_train = y_train.drop(nun_rows.index)
-    X_train['origin_country_code'] = X_train['origin_country_code'].dropna()
+    mask = X_train['origin_country_code'].isna()
+    X_train = X_train[~mask]
+    y_train = y_train[~mask]
     X_train = pd.get_dummies(X_train, prefix="origin_country_code_", columns=['origin_country_code'])
 
     # language - categorical
@@ -153,9 +153,9 @@ def preprocess():
     X_train = pd.get_dummies(X_train, prefix="hotel_city_code_", columns=['hotel_city_code'])
 
     # hotel_country_code - categorical
-    nun_rows = X_train['hotel_country_code'].isna()
-    y_train = y_train.drop(nun_rows.index)
-    X_train['hotel_country_code'] = X_train['hotel_country_code'].dropna()
+    mask = X_train["hotel_country_code"].isna()
+    X_train = X_train[~mask]
+    y_train = y_train[~mask]
     X_train = pd.get_dummies(X_train, prefix="hotel_country_code_", columns=['hotel_country_code'])
 
     # h_booking_id -delete from train, save from output
