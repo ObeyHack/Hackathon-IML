@@ -206,9 +206,7 @@ def preprocess_features(X, y_train=None):
 
 
 def preprocess_for_cost(X, y_train=None):
-
     X, y_train, h_booking_id_save = preprocess_features(X, y_train)
-
     if y_train is not None:
         cancellation_days = X['cancellation_datetime'].apply(lambda x: 0 if pd.isnull(x)
                                                                                     else pd.to_datetime(x).dayofyear +
@@ -222,8 +220,8 @@ def preprocess_for_cost(X, y_train=None):
 
         y_train[X['cancellation_datetime'].isna()] = -1
 
-    X['cancellation_datetime'] = X['cancellation_datetime'].apply(lambda x: 0 if pd.isnull(x) else 1)
-    X = X.drop('cancellation_policy_code', axis=1)
+        X['cancellation_datetime'] = X['cancellation_datetime'].apply(lambda x: 0 if pd.isnull(x) else 1)
+        X = X.drop('cancellation_policy_code', axis=1)
     return X, y_train, h_booking_id_save
 
 def preprocess_for_cancellation(X, y_train=None):

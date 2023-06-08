@@ -1,5 +1,4 @@
 from sys import argv
-
 from Preprocess_data import preprocess_test_reindex
 from agoda_prediction import evaluate_and_export, load_data
 from agoda_cancellation_estimator import AgodaCancellationEstimator
