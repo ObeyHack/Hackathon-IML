@@ -21,6 +21,7 @@ def load_data(filename: str):
     2) Tuple of pandas.DataFrame and Series
     3) Tuple of ndarray of shape (n_samples, n_features) and ndarray of shape (n_samples,)
     """
+
     X_train, y_train, h_booking_id_save = Preprocess_data.preprocess(filename)
     return X_train, y_train
 
@@ -58,4 +59,5 @@ if __name__ == '__main__':
     estimator = AgodaCancellationEstimator().fit(train_X, train_y)
 
     # Store model predictions over test set
-    evaluate_and_export(estimator, test_X, "id1_id2_id3.csv")
+    print("loss: " + str(estimator.loss(test_X, test_y)))
+    #evaluate_and_export(estimator, test_X, "id1_id2_id3.csv")
