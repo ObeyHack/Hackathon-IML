@@ -20,7 +20,7 @@ CATEGORICAL_FEATURES = ["accommadation_type_name",
                        "hotel_country_code"]
 
 
-def preprocess_features(X_train, y_train):
+def preprocess_features(X_train, y_train=None):
     # booking_datetime - delete, parse_dates=["booking_datetime"] in read_csv, use booking_datetime_DayOfYear
     #                                                                             and booking_datetime_year
     X_train['booking_datetime'] = pd.to_datetime(X_train['checkout_date'])
@@ -52,12 +52,13 @@ def preprocess_features(X_train, y_train):
 
     # hotel_star_rating - no change, in range [1,5]
 
-    mask = X_train['hotel_star_rating'] >= 1
-    X_train = X_train[mask]
-    y_train = y_train[mask]
-    mask = X_train['hotel_star_rating'] <= 5
-    X_train = X_train[mask]
-    y_train = y_train[mask]
+    if y_train is not None:
+        mask = X_train['hotel_star_rating'] >= 1
+        X_train = X_train[mask]
+        y_train = y_train[mask]
+        mask = X_train['hotel_star_rating'] <= 5
+        X_train = X_train[mask]
+        y_train = y_train[mask]
 
     # accommadation_type_name - categorical
     X_train = pd.get_dummies(X_train, prefix="accommadation_type_name_", columns=['accommadation_type_name'])
@@ -76,9 +77,13 @@ def preprocess_features(X_train, y_train):
     X_train = pd.get_dummies(X_train, prefix="customer_nationality_", columns=['customer_nationality'])
 
     # guest_is_not_the_customer - no change, already categorical, in {0,1}
-    mask = X_train['guest_is_not_the_customer'].isin({0, 1})
-    X_train = X_train[mask]
-    y_train = y_train[mask]
+    if y_train is not None:
+        mask = X_train['guest_is_not_the_customer'].isin({0, 1})
+        X_train = X_train[mask]
+        y_train = y_train[mask]
+    else:
+        X_train['guest_is_not_the_customer'] = \
+            X_train['guest_is_not_the_customer'].apply(lambda x: 0 if x not in {0, 1} else x)
 
     # guest_nationality_country_name - categorical
     X_train = pd.get_dummies(X_train, prefix="guest_nationality_country_name_",
@@ -86,26 +91,38 @@ def preprocess_features(X_train, y_train):
 
     # no_of_adults - numeric int, min: 1, max: TODO
     X_train['no_of_adults'] = X_train['no_of_adults'].astype(int)
-    mask = X_train['no_of_adults'] >= 1
-    X_train = X_train[mask]
-    y_train = y_train[mask]
+    if y_train is not None:
+        mask = X_train['no_of_adults'] >= 1
+        X_train = X_train[mask]
+        y_train = y_train[mask]
+    else:
+        X_train['no_of_adults'] = X_train['no_of_adults'].apply(lambda x: 1 if x < 1 else x)
 
     # no_of_children - numeric int, min: 0, max: TODO
     X_train['no_of_children'] = X_train['no_of_children'].astype(int)
-    mask = X_train['no_of_children'] >= 0
-    X_train = X_train[mask]
-    y_train = y_train[mask]
+    if y_train is not None:
+        mask = X_train['no_of_children'] >= 0
+        X_train = X_train[mask]
+        y_train = y_train[mask]
+    else:
+        X_train['no_of_children'] = X_train['no_of_children'].apply(lambda x: 0 if x < 0 else x)
 
     # no_of_room - numeric int, min: 1, max: TODO
     X_train['no_of_room'] = X_train['no_of_room'].astype(int)
-    mask = X_train['no_of_room'] >= 1
-    X_train = X_train[mask]
-    y_train = y_train[mask]
+    if y_train is not None:
+        mask = X_train['no_of_room'] >= 1
+        X_train = X_train[mask]
+        y_train = y_train[mask]
+    else:
+        X_train['no_of_room'] = X_train['no_of_room'].apply(lambda x: 1 if x < 1 else x)
 
     # origin_country_code - categorical,remove null and TODO what is A1?
-    mask = X_train['origin_country_code'].isna()
-    X_train = X_train[~mask]
-    y_train = y_train[~mask]
+    if y_train is not None:
+        mask = X_train['origin_country_code'].isna()
+        X_train = X_train[~mask]
+        y_train = y_train[~mask]
+    else:
+        X_train['origin_country_code'] = X_train['origin_country_code'].fillna('USA')
     X_train = pd.get_dummies(X_train, prefix="origin_country_code_", columns=['origin_country_code'])
 
     # language - categorical
@@ -121,22 +138,31 @@ def preprocess_features(X_train, y_train):
     X_train = pd.get_dummies(X_train, prefix="original_payment_currency_", columns=['original_payment_currency'])
 
     # is_user_logged_in - no change, already categorical, in {0,1}
-    mask = X_train['is_user_logged_in'].isin({0, 1})
-    X_train = X_train[mask]
-    y_train = y_train[mask]
+    if y_train is not None:
+        mask = X_train['is_user_logged_in'].isin({0, 1})
+        X_train = X_train[mask]
+        y_train = y_train[mask]
+    else:
+        X_train['is_user_logged_in'] = X_train['is_user_logged_in'].apply(lambda x: 0 if x not in {0, 1} else x)
 
     # is_first_booking - no change, already categorical, in {0,1}
-    mask = X_train['is_first_booking'].isin({0, 1})
-    X_train = X_train[mask]
-    y_train = y_train[mask]
+    if y_train is not None:
+        mask = X_train['is_first_booking'].isin({0, 1})
+        X_train = X_train[mask]
+        y_train = y_train[mask]
+    else:
+        X_train['is_first_booking'] = X_train['is_first_booking'].apply(lambda x: 0 if x not in {0, 1} else x)
 
     # request_* - null to 0, will be categorical, in {0,1}
     for feature in ['request_nonesmoke', 'request_latecheckin', 'request_highfloor', 'request_largebed',
                     "request_twinbeds", "request_airport", "request_earlycheckin"]:
         X_train[feature] = X_train[feature].fillna(0)
-        mask = X_train[feature].isin({0, 1})
-        X_train = X_train[mask]
-        y_train = y_train[mask]
+        if y_train is not None:
+            mask = X_train[feature].isin({0, 1})
+            X_train = X_train[mask]
+            y_train = y_train[mask]
+        else:
+            X_train[feature] = X_train[feature].apply(lambda x: 0 if x not in {0, 1} else x)
 
     # hotel_area_code - use hotel_area_code_by_country with hash
     # hotel_area_code_by_country - categorical
@@ -157,18 +183,23 @@ def preprocess_features(X_train, y_train):
     X_train = pd.get_dummies(X_train, prefix="hotel_city_code_", columns=['hotel_city_code'])
 
     # hotel_country_code - categorical
-    mask = X_train["hotel_country_code"].isna()
-    X_train = X_train[~mask]
-    y_train = y_train[~mask]
+    if y_train is not None:
+        mask = X_train["hotel_country_code"].isna()
+        X_train = X_train[~mask]
+        y_train = y_train[~mask]
+    else:
+        X_train["hotel_country_code"] = X_train["hotel_country_code"].fillna('USA')
+
     X_train = pd.get_dummies(X_train, prefix="hotel_country_code_", columns=['hotel_country_code'])
 
     # h_booking_id -delete from train, save from output
     h_booking_id_save = X_train['h_booking_id']
     X_train = X_train.drop('h_booking_id', axis=1)
 
-    X_train = X_train.reset_index(drop=True)
-    y_train = y_train.reset_index(drop=True)
-    h_booking_id_save = h_booking_id_save.reset_index(drop=True)
+    if y_train is not None:
+        X_train = X_train.reset_index(drop=True)
+        y_train = y_train.reset_index(drop=True)
+        h_booking_id_save = h_booking_id_save.reset_index(drop=True)
     return X_train, y_train, h_booking_id_save
 
 
