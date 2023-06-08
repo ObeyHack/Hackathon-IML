@@ -1,7 +1,9 @@
 
 h_booking_id - delete from train, save from output
-booking_datetime - parse_dates=["booking_datetime"] in read_csv
-checkin_date - parse_dates=["checkin_date"] in read_csv
+booking_datetime - delete, parse_dates=["booking_datetime"] in read_csv, use booking_datetime_DayOfYear
+                                                                            and booking_datetime_year
+checkin_date - delete, parse_dates=["checkin_date"] in read_csv, use booking_datetime_DayOfYear
+                                                                            and booking_datetime_year
 checkout_date - delete from train, will be used to calculate stay_duration
 hotel_id - delete for now TODO
 hotel_country_code - categorical remove null
@@ -19,10 +21,10 @@ no_of_extra_bed - numeric, min: 0, max: TODO
 no_of_room - numeric, min: 1, max: TODO
 origin_country_code - categorical, remove null and TODO what is A1?
 language - categorical
-original_selling_amount - numeric, apply currency_convert, min: TODO, max: TODO
+original_selling_amount - deleted, will be switched to new column, numeric, apply currency_convert, min: TODO, max: TODO
 original_payment_method - categorical
 original_payment_type - categorical
-original_payment_currency - delete from train, will be converted to original_selling_amount
+original_payment_currency - categorical
 is_user_logged_in - no change, already categorical, in {0,1}
 cancellation_policy_code - categorical TODO
 is_first_booking - no change, already categorical, in {0,1}
@@ -36,7 +38,7 @@ request_earlycheckin - null to 0, will be categorical, in {0,1}
 cancellation_datetime - delete from train, will be y_train, null to 0 the rest will be 1
 hotel_area_code - use hotel_area_code_by_country with hash
 hotel_brand_code - delete for now TODO
-hotel_chain_code - categorical, null to 0 if 0 is not in the list of codes
+hotel_chain_code - categorical, null to "No-Chain"
 hotel_city_code - categorical
 
 ##### new features #####
@@ -46,3 +48,4 @@ booking_datetime_year - df["booking_datetime"].dt.year
 checkin_date_DayOfYear - df["checkin_date"].dt.day_of_year
 checkin_date_year - df["checkin_date"].dt.year
 hotel_area_code_by_country - categorical
+original_selling_amount_in_dollar - original_selling_amount * currency_convert
