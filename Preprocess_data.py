@@ -88,7 +88,7 @@ def preprocess():
     X_train = X_train[mask]
     y_train = y_train[mask]
 
-    # origin_country_code - categorical, remove null and TODO what is A1?
+    # origin_country_code - categorical,remove null and TODO what is A1?
     mask = X_train['origin_country_code'].isna()
     X_train = X_train[~mask]
     y_train = y_train[~mask]
