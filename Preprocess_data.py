@@ -124,9 +124,6 @@ def preprocess_features(X_train, y_train):
     X_train = X_train[mask]
     y_train = y_train[mask]
 
-    # cancellation_policy_code - categorical TODO
-    # X_train = pd.get_dummies(X_train, prefix="cancellation_policy_code_", columns=['cancellation_policy_code'])
-
     # is_first_booking - no change, already categorical, in {0,1}
     mask = X_train['is_first_booking'].isin({0, 1})
     X_train = X_train[mask]
@@ -211,6 +208,10 @@ def preprocess_for_cancellation(filename: str):
         lambda amount_currency:
         Currency_convert.to_dollar(amount_currency[0],
                                    amount_currency[1]))
+
+    # cancellation_policy_code - categorical TODO
+    # X_train = pd.get_dummies(X_train, prefix="cancellation_policy_code_", columns=['cancellation_policy_code'])
+
     X_train, y_train, h_booking_id_save = preprocess_features(X_train, y_train)
 
     return X_train, y_train, h_booking_id_save
