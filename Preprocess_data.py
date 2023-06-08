@@ -12,30 +12,27 @@ def preprocess():
     # booking_datetime - delete, parse_dates=["booking_datetime"] in read_csv, use booking_datetime_DayOfYear
     #                                                                             and booking_datetime_year
     X_train['booking_datetime'] = pd.to_datetime(X_train['checkout_date'])
-    X_train["booking_datetime"] = X_train["booking_datetime"].dt.day_of_year
-    X_train["booking_datetime"] = X_train["booking_datetime"].dt.year
+    X_train["booking_datetime_DayOfYear"] = X_train["booking_datetime"].dt.day_of_year
+    X_train["booking_datetime_year"] = X_train["booking_datetime"].dt.year
     X_train = X_train.drop('booking_datetime', axis=1)
 
 
     # checkin_date - delete, parse_dates=["checkin_date"] in read_csv, use booking_datetime_DayOfYear
     #                                                                             and booking_datetime_year
     X_train['checkin_date'] = pd.to_datetime(X_train['checkin_date'])
-    X_train["checkin_date"] = X_train["checkin_date"].dt.day_of_year
-    X_train["checkin_date"] = X_train["checkin_date"].dt.year
+    X_train["checkin_date_DayOfYear"] = X_train["checkin_date"].dt.day_of_year
+    X_train["checkin_date_year"] = X_train["checkin_date"].dt.year
     X_train = X_train.drop('checkin_date', axis=1)
 
     # checkout_date - delete from train, will be used to calculate stay_duration
     # (checkout_date - checkin_date).days
     X_train['checkout_date'] = pd.to_datetime(X_train['checkout_date'])
-    X_train["stay_duration"] = (X_train['checkout_date'] - X_train['checkin_date']).dt.days
+    days = (X_train["checkin_date_DayOfYear"] - X_train["checkout_date"].dt.day_of_year)
+    X_train["stay_duration"] = ((days % 365) + 365) % 365 # mod 365
     X_train = X_train.drop('checkout_date', axis=1)
 
     # hotel_id - delete for now TODO
     X_train = X_train.drop('hotel_id', axis=1)
-
-    # hotel_country_code - categorical
-    X_train['hotel_country_code'] = X_train['hotel_country_code'].dropna()
-    X_train = pd.get_dummies(X_train, prefix="hotel_country_code_", columns=['hotel_country_code'])
 
     # hotel_live_date - delete for now TODO
     X_train = X_train.drop('hotel_live_date', axis=1)
@@ -85,13 +82,15 @@ def preprocess():
     X_train = X_train[mask]
     y_train = y_train[mask]
 
-    # no_of_rooms - numeric int, min: 1, max: TODO
-    X_train['no_of_rooms'] = X_train['no_of_rooms'].astype(int)
-    mask = X_train['no_of_rooms'] >= 1
+    # no_of_room - numeric int, min: 1, max: TODO
+    X_train['no_of_room'] = X_train['no_of_room'].astype(int)
+    mask = X_train['no_of_room'] >= 1
     X_train = X_train[mask]
     y_train = y_train[mask]
 
     # origin_country_code - categorical, remove null and TODO what is A1?
+    nun_rows = X_train[X_train['origin_country_code'].isna()]
+    y_train = y_train.drop(nun_rows.index)
     X_train['origin_country_code'] = X_train['origin_country_code'].dropna()
     X_train = pd.get_dummies(X_train, prefix="origin_country_code_", columns=['origin_country_code'])
 
@@ -101,10 +100,10 @@ def preprocess():
     # original_selling_amount - numeric, apply currency_convert, min: TODO, max: TODO
     X_train['original_selling_amount'] = X_train['original_selling_amount'].astype(float)
     X_train['original_selling_amount_in_dollar'] = list(zip(X_train['original_selling_amount'],
-                                                            X_train['original_currency_code']))
-    X_train['original_selling_amount_in_dollar'] = X_train['original_selling_amount'].apply(lambda amount, currency:
-                                                                                  Currency_convert.to_dollar(amount,
-                                                                                                             currency))
+                                                            X_train['original_payment_currency']))
+    X_train['original_selling_amount_in_dollar'] = X_train['original_selling_amount_in_dollar'].apply(lambda amount_currency:
+                                                                                  Currency_convert.to_dollar(amount_currency[0],
+                                                                                                             amount_currency[1]))
     # original_payment_method - categorical
     X_train = pd.get_dummies(X_train, prefix="original_payment_method_", columns=['original_payment_method'])
 
@@ -137,10 +136,10 @@ def preprocess():
 
     # hotel_area_code - use hotel_area_code_by_country with hash
     # hotel_area_code_by_country - categorical
-    X_train['original_selling_amount_in_dollar'] = list(zip(X_train['hotel_area_code'],
+    X_train['hotel_area_code_by_country'] = list(zip(X_train['hotel_area_code'],
                                                             X_train['hotel_country_code']))
 
-    X_train['hotel_area_code_by_country'] = X_train['original_selling_amount_in_dollar'].apply(lambda x: hash(x))
+    X_train['hotel_area_code_by_country'] = X_train['hotel_area_code_by_country'].apply(lambda x: hash(x))
     X_train = pd.get_dummies(X_train, prefix="hotel_area_code_by_country_", columns=['hotel_area_code_by_country'])
 
     # hotel_brand_code - delete for now TODO
@@ -152,6 +151,12 @@ def preprocess():
 
     # hotel_city_code - categorical
     X_train = pd.get_dummies(X_train, prefix="hotel_city_code_", columns=['hotel_city_code'])
+
+    # hotel_country_code - categorical
+    nun_rows = X_train['hotel_country_code'].isna()
+    y_train = y_train.drop(nun_rows.index)
+    X_train['hotel_country_code'] = X_train['hotel_country_code'].dropna()
+    X_train = pd.get_dummies(X_train, prefix="hotel_country_code_", columns=['hotel_country_code'])
 
     # h_booking_id -delete from train, save from output
     h_booking_id_save = X_train['h_booking_id']
