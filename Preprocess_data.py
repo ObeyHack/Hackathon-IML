@@ -21,6 +21,18 @@ def preprocess():
     X_train['checkin_date'] = pd.to_datetime(X_train['checkin_date'])
     X_train['checkout_date'] = pd.to_datetime(X_train['checkout_date'])
     X_train['booking_datetime'] = pd.to_datetime(X_train['checkout_date'])
+
+
+    # h_booking_id - delete from train, save from output
+    h_booking_id_save = X_train['h_booking_id']
+    X_train = X_train.drop('h_booking_id', axis=1)
+
+    # booking_datetime - parse_dates=["booking_datetime"] in read_csv DONE IN LINE 23
+    # checkin_date - parse_dates=["checkin_date"] in read_csv DONE IN LINE 21
+    # checkout_date - delete from train, will be used to calculate stay_duration
+    X_train["stay_duration"] = (X_train['checkout_date'] - X_train['checkin_date']).days
+
+
     return X_train, y_train
 
 
