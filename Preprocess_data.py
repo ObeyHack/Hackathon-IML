@@ -2,7 +2,7 @@ import pandas as pd
 
 import Currency_convert
 
-CATEGORIAL_FEATURES = ["accommadation_type_name",
+CATEGORICAL_FEATURES = ["accommadation_type_name",
                        "charge_option",
                        "customer_nationality",
                        "guest_nationality_country_name",
@@ -16,6 +16,7 @@ CATEGORIAL_FEATURES = ["accommadation_type_name",
                        "hotel_chain_code",
                        "hotel_city_code",
                        "hotel_country_code"]
+
 
 def preprocess():
     data = pd.read_csv("data//agoda_cancellation_train.csv")
@@ -176,11 +177,15 @@ def preprocess():
     h_booking_id_save = X_train['h_booking_id']
     X_train = X_train.drop('h_booking_id', axis=1)
 
+    X_train = X_train.reset_index(drop=True)
+    y_train = y_train.reset_index(drop=True)
+    h_booking_id_save = h_booking_id_save.reset_index(drop=True)
     return X_train, y_train, h_booking_id_save
 
 
 def main():
     X, y, y_index = preprocess()
+    T = 1
 
 
 if __name__ == '__main__':
