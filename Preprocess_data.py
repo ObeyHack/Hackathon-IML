@@ -51,6 +51,7 @@ def preprocess_features(X_train, y_train):
     X_train = X_train.drop('hotel_live_date', axis=1)
 
     # hotel_star_rating - no change, in range [1,5]
+
     mask = X_train['hotel_star_rating'] >= 1
     X_train = X_train[mask]
     y_train = y_train[mask]
@@ -171,8 +172,8 @@ def preprocess_features(X_train, y_train):
     return X_train, y_train, h_booking_id_save
 
 
-def preprocess_for_cost(filename: str):
-    data = pd.read_csv(filename)
+def preprocess_for_cost(X_train, y_train):
+
     X_train = data.drop('original_selling_amount', axis=1)
     y_train = data['original_selling_amount']
 

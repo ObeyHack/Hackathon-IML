@@ -38,6 +38,7 @@ def split_train_test(X: pd.DataFrame, y: pd.Series, train_proportion: float = .7
     testing_set = X.loc[X.index.difference(training_set.index)]
     return training_set, y.loc[training_set.index], testing_set, y.loc[testing_set.index]
 
+
 def confusion_matrix(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     """
     Compute a confusion matrix between two sets of integer vectors

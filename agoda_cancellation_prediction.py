@@ -21,7 +21,8 @@ def load_data(filename: str):
     2) Tuple of pandas.DataFrame and Series
     3) Tuple of ndarray of shape (n_samples, n_features) and ndarray of shape (n_samples,)
     """
-
+    data = pd.read_csv(filename)
+    if
     X_train, y_train, h_booking_id_save = Preprocess_data.preprocess_for_cost(filename)
     return X_train, pd.Series(y_train)
 
