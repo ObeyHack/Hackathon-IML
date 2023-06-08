@@ -4,7 +4,7 @@ booking_datetime - parse_dates=["booking_datetime"] in read_csv
 checkin_date - parse_dates=["checkin_date"] in read_csv
 checkout_date - delete from train, will be used to calculate stay_duration
 hotel_id - delete for now TODO
-hotel_country_code - categorical
+hotel_country_code - categorical remove null
 hotel_live_date - delete for now TODO
 hotel_star_rating - no change, in range [1,5]
 accommadation_type_name - categorical
@@ -17,7 +17,7 @@ no_of_adults - numeric, min: 1, max: TODO
 no_of_children - numeric, min: 0, max: TODO
 no_of_extra_bed - numeric, min: 0, max: TODO
 no_of_room - numeric, min: 1, max: TODO
-origin_country_code - categorical, remove null and what is A1?
+origin_country_code - categorical, remove null and TODO what is A1?
 language - categorical
 original_selling_amount - numeric, apply currency_convert, min: TODO, max: TODO
 original_payment_method - categorical
