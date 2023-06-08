@@ -30,6 +30,8 @@ def preprocess():
     # booking_datetime - parse_dates=["booking_datetime"] in read_csv DONE IN LINE 23
     # checkin_date - parse_dates=["checkin_date"] in read_csv DONE IN LINE 21
     # checkout_date - delete from train, will be used to calculate stay_duration
+    X_train["stay_duration"] = (X_train['checkout_date'] - X_train['checkin_date']).days
+
 
     return X_train, y_train
 
