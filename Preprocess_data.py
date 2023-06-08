@@ -158,7 +158,7 @@ def preprocess():
     y_train = y_train[~mask]
     X_train = pd.get_dummies(X_train, prefix="hotel_country_code_", columns=['hotel_country_code'])
 
-    # h_booking_id -delete from train, save from output
+    # h_booking_id - delete from train, save from output
     h_booking_id_save = X_train['h_booking_id']
     X_train = X_train.drop('h_booking_id', axis=1)
 
