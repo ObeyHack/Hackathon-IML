@@ -22,8 +22,8 @@ def load_data(filename: str):
     3) Tuple of ndarray of shape (n_samples, n_features) and ndarray of shape (n_samples,)
     """
 
-    X_train, y_train, h_booking_id_save = Preprocess_data.preprocess(filename)
-    return X_train, y_train
+    X_train, y_train, h_booking_id_save = Preprocess_data.preprocess_for_cost(filename)
+    return X_train, pd.Series(y_train)
 
 
 def evaluate_and_export(estimator: BaseEstimator, X: np.ndarray, filename: str):
@@ -50,7 +50,6 @@ def evaluate_and_export(estimator: BaseEstimator, X: np.ndarray, filename: str):
 
 if __name__ == '__main__':
     np.random.seed(0)
-
     # Load data
     df, cancellation_labels = load_data("data//agoda_cancellation_train.csv")
     train_X, train_y, test_X, test_y = split_train_test(df, cancellation_labels)

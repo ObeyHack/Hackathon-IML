@@ -188,6 +188,8 @@ def preprocess_for_cost(filename: str):
     y_train = func(X_train["cancellation_policy_code"], y_train,
                                 days_before_checkin, X_train['stay_duration'])
 
+    X_train = X_train.drop('cancellation_policy_code', axis=1)
+
     y_train[X_train['cancellation_datetime'].isna()] = -1
     X_train['cancellation_datetime'] = X_train['cancellation_datetime'].apply(lambda x: 0 if pd.isnull(x) else 1)
 
@@ -211,7 +213,7 @@ def preprocess_for_cancellation(filename: str):
 
     # cancellation_policy_code - categorical TODO
     # X_train = pd.get_dummies(X_train, prefix="cancellation_policy_code_", columns=['cancellation_policy_code'])
-
+    X_train = X_train.drop('cancellation_policy_code', axis=1)
     X_train, y_train, h_booking_id_save = preprocess_features(X_train, y_train)
 
     return X_train, y_train, h_booking_id_save

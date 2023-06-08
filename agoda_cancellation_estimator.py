@@ -4,9 +4,10 @@ from typing import NoReturn
 import sklearn.ensemble
 from sklearn.linear_model import LogisticRegression, LinearRegression
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import log_loss
-from sklearn.ensemble import AdaBoostClassifier
+from sklearn.metrics import mean_squared_error, log_loss
+from sklearn.ensemble import AdaBoostClassifier, AdaBoostRegressor
 from sklearn.datasets import make_classification
+from sklearn.neural_network import MLPClassifier
 from sklearn.tree import DecisionTreeClassifier
 
 from base_estimator import BaseEstimator
@@ -51,14 +52,17 @@ class AgodaCancellationEstimator(BaseEstimator):
         """
         # self.model = LinearRegression().fit(X, y)
         # 0.28 loss
-        self.models.append(LogisticRegression(random_state=0, max_iter=200).fit(X, y))
+        # self.models.append(LogisticRegression(random_state=0, max_iter=40, solver="saga").fit(X, y))
         # 0.3 loss - 13
-        self.models.append(KNeighborsClassifier(n_neighbors=13).fit(X, y))
+        # self.models.append(KNeighborsClassifier(n_neighbors=13).fit(X, y))
         # 0.21 - 40 estimators
-        self.models.append(AdaBoostClassifier(n_estimators=40, random_state=0).fit(X, y))
+        # self.models.append(AdaBoostClassifier(n_estimators=40, random_state=0).fit(X, y))
         # 0.22 loss
-        # self.model = DecisionTreeClassifier(max_depth=14).fit(X, y)
+        # self.models.append(DecisionTreeClassifier(max_depth=14).fit(X, y))
+        # 0.26 loss
+        # self.models.append(MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(100, 10, 2), random_state=1).fit(X, y))
 
+        self.models.append(LinearRegression().fit(X, y))
 
     def _predict(self, X: np.ndarray) -> np.ndarray:
         """
@@ -77,10 +81,11 @@ class AgodaCancellationEstimator(BaseEstimator):
         sums = np.zeros(len(X))
         for m in self.models:
             sums += m.predict(X)
-        sums /= 3
+        sums /= len(self.models)
         sums = np.round(sums)
 
         return sums
+        # return self.models[0].predict()
         # return np.zeros(X.shape[0])
 
     def _loss(self, X: np.ndarray, y: np.ndarray) -> float:
@@ -102,4 +107,6 @@ class AgodaCancellationEstimator(BaseEstimator):
         """
         # self.model.predict_proba(X)
         # return log_loss(y, self._predict(X), eps=1e-15)
-        return np.sum(self.predict(X) != y) / y.size
+        # return np.sum(self.predict(X) != y) / y.size
+        return sklearn.metrics.f1_score()
+        return mean_squared_error(y, self.predict(X))
