@@ -2,60 +2,6 @@ import pandas as pd
 
 import Currency_convert
 
-CATEGORICAL_FEATURES = ["charge_option", "customer_nationality",
-                        "guest_nationality_country_name", "origin_country_code"
-                                                          "language", "original_payment_method",
-                        "original_payment_type"]
-
-
-# h_booking_id - delete from train, save from output
-# booking_datetime - parse_dates=["booking_datetime"] in read_csv
-# checkin_date - parse_dates=["checkin_date"] in read_csv
-# checkout_date - delete from train, will be used to calculate stay_duration
-# hotel_id - delete for now TODO
-# hotel_country_code - categorical
-# hotel_live_date - delete for now TODO
-# hotel_star_rating - no change, in range [1,5]
-# accommadation_type_name - categorical
-# charge_option - categorical
-# h_customer_id - delete for now TODO
-# customer_nationality - categorical, remove "of America" from prefix "United States of America"
-# guest_is_not_the_customer - no change, already categorical, in {0,1}
-# guest_nationality_country_name - categorical
-# no_of_adults - numeric, min: 1, max: TODO
-# no_of_children - numeric, min: 0, max: TODO
-# no_of_extra_bed - numeric, min: 0, max: TODO
-# no_of_room - numeric, min: 1, max: TODO
-# origin_country_code - categorical, remove null and what is A1?
-# language - categorical
-# original_selling_amount - numeric, apply currency_convert, min: TODO, max: TODO
-# original_payment_method - categorical
-# original_payment_type - categorical
-# original_payment_currency - categorical
-# is_user_logged_in - no change, already categorical, in {0,1}
-# cancellation_policy_code - categorical TODO
-# is_first_booking - no change, already categorical, in {0,1}
-# request_nonesmoke - null to 0, will be categorical, in {0,1}
-# request_latecheckin - null to 0, will be categorical, in {0,1}
-# request_highfloor - null to 0, will be categorical, in {0,1}
-# request_largebed - null to 0, will be categorical, in {0,1}
-# request_twinbeds - null to 0, will be categorical, in {0,1}
-# request_airport - null to 0, will be categorical, in {0,1}
-# request_earlycheckin - null to 0, will be categorical, in {0,1}
-# cancellation_datetime - delete from train, will be y_train, null to 0 the rest will be 1
-# hotel_area_code - use hotel_area_code_by_country with hash
-# hotel_brand_code - delete for now TODO
-# hotel_chain_code - categorical, null to 0 if 0 is not in the list of codes
-# hotel_city_code - categorical
-#
-# ##### new features #####
-# stay_duration - (checkout_date - checkin_date).days
-# booking_datetime_DayOfYear - df["booking_datetime"].dt.day_of_year
-# booking_datetime_year - df["booking_datetime"].dt.year
-# checkin_date_DayOfYear - df["checkin_date"].dt.day_of_year
-# checkin_date_year - df["checkin_date"].dt.year
-# hotel_area_code_by_country - categorical
-
 
 def preprocess():
     data = pd.read_csv('data\\agoda_cancellation_train.csv')
@@ -212,32 +158,6 @@ def preprocess():
     X_train = X_train.drop('h_booking_id', axis=1)
 
     return X_train, y_train, h_booking_id_save
-
-
-def preprocess2():
-    # Read data
-    data = pd.read_csv('data\\agoda_cancellation_train.csv')
-    # Split the data into X and y
-    X_train = data.drop('cancellation_datetime', axis=1)
-    y_train = data['cancellation_datetime']
-    # binary the y_train
-    y_train = y_train.apply(lambda x: 0 if pd.isnull(x) else 1)
-
-    # make date to datetime
-    X_train['checkin_date'] = pd.to_datetime(X_train['checkin_date'])
-    X_train['checkout_date'] = pd.to_datetime(X_train['checkout_date'])
-    X_train['booking_datetime'] = pd.to_datetime(X_train['checkout_date'])
-
-    # h_booking_id - delete from train, save from output
-    h_booking_id_save = X_train['h_booking_id']
-    X_train = X_train.drop('h_booking_id', axis=1)
-
-    # booking_datetime - parse_dates=["booking_datetime"] in read_csv DONE IN LINE 23
-    # checkin_date - parse_dates=["checkin_date"] in read_csv DONE IN LINE 21
-    # checkout_date - delete from train, will be used to calculate stay_duration
-    X_train["stay_duration"] = (X_train['checkout_date'] - X_train['checkin_date']).days
-
-    return X_train, y_train
 
 
 def main():
