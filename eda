@@ -3,7 +3,7 @@ is_user_logged_in :
 0.2 of logged in users canceled their reservation
 
 hotel rating :
-hotel star rating is not a good indicator for cancellation (maybe only zero is a bit good)
+hotel star ratin g is not a good indicator for cancellation (maybe only zero is a bit good)
 
 no extra bed :
 0.35 for 2 is the highest cancellation probability

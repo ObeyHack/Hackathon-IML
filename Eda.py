@@ -11,7 +11,7 @@ L_features = ['no_of_adults', 'no_of_children', 'no_of_room', 'no_of_extra_bed',
 
 def important_data():
     X, y = preprocess()
-    # for each cancellation_policy_code find the number of cancellation
+    # for each cancellation_policy_cod e find the number of cancellation
 
     cancellation_policy_code = X['cancellation_policy_code'].unique()
     cancellation_policy_code_hash = {cancellation_policy_code[i]: 0 for i in range(len(cancellation_policy_code))}
