@@ -5,6 +5,9 @@ from agoda_prediction import evaluate_and_export, load_data
 from agoda_cancellation_estimator import AgodaCancellationEstimator
 from agoda_selling_amount_estimator import AgodaSellingAmountEstimator
 
+
+# commend line args: data\\agoda_cancellation_train.csv data\\Agoda_Test_1.csv data\\Agoda_Test_2.csv
+
 if __name__ == '__main__':
     # block 1
     filename = argv[1]
