@@ -4,7 +4,7 @@ from typing import NoReturn
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import log_loss
 
-from IMLearn.base import BaseEstimator
+from base_estimator import BaseEstimator
 import numpy as np
 
 
