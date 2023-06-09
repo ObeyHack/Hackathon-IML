@@ -13,7 +13,7 @@ if __name__ == '__main__':
     X_train_1, y_train_1, _ = load_data(filename, is_cancellation=True)
     model_cancellation_1 = AgodaCancellationEstimator().fit(X_train_1, y_train_1)
     X_train_2, y_train_2, _ = load_data(filename, is_cancellation=False)
-    model_cancellation_2 = AgodaSellingAmountEstimator().fit(X_train_2, y_train_2)
+    model_cancellation_2 = AgodaSellingAmountEstimator(model_cancellation_1).fit(X_train_2, y_train_2)
 
     # block 2
     test_filename_1 = argv[2]
