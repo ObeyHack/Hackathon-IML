@@ -20,7 +20,7 @@ class AgodaSellingAmountEstimator(BaseEstimator):
     An estimator for solving the Agoda Cancellation challenge
     """
 
-    def __init__(self, cancel_estimator) -> AgodaSellingAmountEstimator:
+    def __init__(self) -> AgodaSellingAmountEstimator:
         """
         Instantiate an estimator for solving the Agoda Cancellation challenge
 
@@ -34,7 +34,6 @@ class AgodaSellingAmountEstimator(BaseEstimator):
         """
         super().__init__()
         self.model = None
-        self.cancel_estimator = cancel_estimator
 
     def _fit(self, X: np.ndarray, y: np.ndarray) -> NoReturn:
         """
@@ -69,10 +68,8 @@ class AgodaSellingAmountEstimator(BaseEstimator):
             Predicted responses of given samples
         """
 
-        y_classify = self.cancel_estimator.predict(X)
         y_pred = self.model.predict(X)
-        y_pred[y_classify == 0] = -1
-        return y_pred
+        return y_pred.apply(lambda y: -1 if y < 0 or y > 10000 else y)
 
 
     def _loss(self, X: np.ndarray, y: np.ndarray) -> float:
