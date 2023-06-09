@@ -15,7 +15,7 @@ def cancellation_cost(cancellation_policy_codes, nights_count, total_prices, day
     else:
         user_cost = night_cost * nights
 
-    return user_cost
+    return total_prices - user_cost
 
 
 def argmin_days(days_before_checkin, parsed_policy_codes):
