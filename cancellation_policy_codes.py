@@ -13,7 +13,7 @@ def cancellation_cost(cancellation_policy_codes, nights_count, total_prices, day
         user_cost = total_prices * (percentage / 100)
 
     else:
-        user_cost = night_cost * nights
+        user_cost = night_cost *  nights
 
     return total_prices - user_cost
 
