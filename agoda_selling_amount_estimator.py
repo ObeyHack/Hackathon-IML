@@ -68,8 +68,7 @@ class AgodaSellingAmountEstimator(BaseEstimator):
             Predicted responses of given samples
         """
 
-        y_pred = self.model.predict(X)
-        return y_pred.apply(lambda y: -1 if y < 0 or y > 10000 else y)
+        return self.model.predict(X)
 
 
     def _loss(self, X: np.ndarray, y: np.ndarray) -> float:
