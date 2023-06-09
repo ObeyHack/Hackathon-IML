@@ -10,6 +10,7 @@ from sklearn.datasets import make_classification
 from sklearn.neural_network import MLPClassifier
 from sklearn.tree import DecisionTreeClassifier
 
+from agoda_cancellation_estimator import AgodaCancellationEstimator
 from base_estimator import BaseEstimator
 import numpy as np
 
@@ -33,6 +34,7 @@ class AgodaSellingAmountEstimator(BaseEstimator):
         """
         super().__init__()
         self.model = None
+        self.cancel_estimator = None
 
     def _fit(self, X: np.ndarray, y: np.ndarray) -> NoReturn:
         """
@@ -50,6 +52,7 @@ class AgodaSellingAmountEstimator(BaseEstimator):
         -----
 
         """
+        self.cancel_estimator = AgodaCancellationEstimator().fit(X, y.apply(lambda x: 1 if x >= 0 else 0))
         self.model = LinearRegression().fit(X, y)
 
     def _predict(self, X: np.ndarray) -> np.ndarray:
@@ -67,7 +70,11 @@ class AgodaSellingAmountEstimator(BaseEstimator):
             Predicted responses of given samples
         """
 
-        return self.model.predict(X)
+        y_classify = self.cancel_estimator.predict(X)
+        y_pred = self.model.predict(X)
+        y_pred[y_classify == 0] = -1
+        return y_pred
+
 
     def _loss(self, X: np.ndarray, y: np.ndarray) -> float:
         """
