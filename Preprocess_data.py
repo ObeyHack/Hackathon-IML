@@ -215,10 +215,10 @@ def preprocess_for_cost(X, y_train=None):
                               cancellation_days
 
         func = np.vectorize(cancellation_cost, otypes=[float])
-        y_train = func(X["cancellation_policy_code"], y_train,
+        y_train =  func(X["cancellation_policy_code"], y_train,
                                     days_before_checkin, X['stay_duration'])
 
-         y_train[X['cancellation_datetime'].isna()] = -1
+        y_train[X['cancellation_datetime'].isna()] = -1
 
         X['cancellation_datetime'] = X['cancellation_datetime'].apply(lambda x: 0 if pd.isnull(x) else 1)
         X = X.drop('cancellation_policy_code', axis=1)
