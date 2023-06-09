@@ -24,7 +24,7 @@ X_train = None
 def preprocess_features(X, y_train=None):
     # booking_datetime - delete, parse_dates=["booking_datetime"] in read_csv, use booking_datetime_DayOfYear
     #                                                                             and booking_datetime_year
-    X['booking_datetime'] = pd.to_datetime(X['checkout_date'])
+    X['booking_datetime'] = pd.to_datetime(X['booking_datetime'])
     X["booking_datetime_DayOfYear"] = X["booking_datetime"].dt.dayofyear
     X["booking_datetime_year"] = X["booking_datetime"].dt.year
     X = X.drop('booking_datetime', axis=1)
